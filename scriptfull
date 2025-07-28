@@ -137,4 +137,3 @@ task.spawn(function()
 		StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
 	end)
 end)
-https://pastebin.com/raw/waHY48Vk
